@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>about:blank</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: white;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        #blankScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 1000;
+        }
+        #searchEngine {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 900;
+        }
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- This looks exactly like about:blank -->
+    <div id="blankScreen"></div>
+    
+    <!-- Hidden search engine that activates on secret trigger -->
+    <div id="searchEngine">
+        <iframe id="browserFrame" style="width: 100%; height: 100%; border: none;"></iframe>
+        <div id="searchInterface" class="hidden">
+            <div class="search-header">
+                <input type="text" id="searchInput" placeholder="Search or enter website URL">
+                <button onclick="search()">Go</button>
+                <button onclick="hideSearch()">Hide</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="blank-disguise.js"></script>
+    <script src="proxy-search.js"></script>
+    <script>
+        // Register service worker for caching
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js');
+        }
+    </script>
+</body>
+</html>
