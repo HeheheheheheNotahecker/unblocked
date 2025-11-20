@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Secure Search</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="proxy-search.js"></script>
+</head>
+<body>
+    <div class="search-container">
+        <div class="search-header">
+            <h1>Secure Search Engine</h1>
+            <div class="search-box">
+                <input type="text" id="mainSearch" placeholder="Search the web securely..." autofocus>
+                <button onclick="performSearch()">Search</button>
+            </div>
+            <div class="quick-links">
+                <button onclick="loadProxySite('https://www.google.com')">Google</button>
+                <button onclick="loadProxySite('https://www.youtube.com')">YouTube</button>
+                <button onclick="loadProxySite('https://www.netflix.com')">Netflix</button>
+                <button onclick="loadProxySite('https://www.spotify.com')">Spotify</button>
+            </div>
+        </div>
+        
+        <div class="proxy-controls">
+            <label for="proxySelect">Proxy Service:</label>
+            <select id="proxySelect">
+                <option value="https://corrosion.pro/">Corrosion</option>
+                <option value="https://womginx.github.io/">Womginx</option>
+                <option value="https://www.ultraviolet-node.com/">Ultraviolet</option>
+                <option value="https://hypertabs.undercase.workers.dev/">Hypertabs</option>
+            </select>
+            <button onclick="applyProxy()">Apply Proxy</button>
+        </div>
+
+        <div id="searchResults" class="results-container">
+            <!-- Search results will appear here -->
+        </div>
+
+        <div class="browser-frame hidden" id="browserView">
+            <div class="browser-header">
+                <input type="text" id="urlBar" placeholder="Enter URL">
+                <button onclick="navigateToUrl()">Go</button>
+                <button onclick="goBack()">← Back</button>
+                <button onclick="goForward()">Forward →</button>
+                <button onclick="closeBrowser()">Close</button>
+            </div>
+            <iframe id="siteFrame" style="width: 100%; height: 80vh; border: none;"></iframe>
+        </div>
+    </div>
+
+    <script>
+        let currentProxy = 'https://corrosion.pro/';
+        let history = [];
+        let historyIndex = -1;
+
+        function performSearch() {
+            const query = document.getElementById('mainSearch').value.trim();
+            if (!query) return;
+
+            const resultsDiv = document.getElementById('searchResults');
+            resultsDiv.innerHTML = `
+                <div class="searching">Searching for "${query}"...</div>
+                <div class="result-item" onclick="loadUrl('${currentProxy}https://www.google.com/search?q=${encodeURIComponent(query)}')">
+                    <h3>Search Google for "${query}"</h3>
+                    <p>Search through Google via proxy</p>
+                </div>
+                <div class="result-item" onclick="loadUrl('${currentProxy}https://www.bing.com/search?q=${encodeURIComponent(query)}')">
+                    <h3>Search Bing for "${query}"</h3>
+                    <p>Search through Bing via proxy</p>
+                </div>
+                <div class="result-item" onclick="loadUrl('${currentProxy}https://duckduckgo.com/?q=${encodeURIComponent(query)}')">
+                    <h3>Search DuckDuckGo for "${query}"</h3>
+                    <p>Search through DuckDuckGo via proxy</p>
+                </div>
+            `;
+        }
+
+        function loadProxySite(url) {
+            loadUrl(currentProxy + url);
+        }
+
+        function loadUrl(url) {
+            if (!url.startsWith('http')) {
+                url = 'https://' + url;
+            }
+            
+            const proxyUrl = currentProxy + url;
+            document.getElementById('searchResults').classList.add('hidden');
+            document.getElementById('browserView').classList.remove('hidden');
+            
+            const frame = document.getElementById('siteFrame');
+            frame.src = proxyUrl;
+            
+            document.getElementById('urlBar').value = url;
+            
+            // Add to history
+            history.push(proxyUrl);
+            historyIndex = history.length - 1;
+        }
+
+        function navigateToUrl() {
+            const url = document.getElementById('urlBar').value.trim();
+            loadUrl(url);
+        }
+
+        function goBack() {
+            if (historyIndex > 0) {
+                historyIndex--;
+                const frame = document.getElementById('siteFrame');
+                frame.src = history[historyIndex];
+                document.getElementById('urlBar').value = history[historyIndex].replace(currentProxy, '');
+            }
+        }
+
+        function goForward() {
+            if (historyIndex < history.length - 1) {
+                historyIndex++;
+                const frame = document.getElementById('siteFrame');
+                frame.src = history[historyIndex];
+                document.getElementById('urlBar').value = history[historyIndex].replace(currentProxy, '');
+            }
+        }
+
+        function closeBrowser() {
+            document.getElementById('browserView').classList.add('hidden');
+            document.getElementById('searchResults').classList.remove('hidden');
+        }
+
+        function applyProxy() {
+            currentProxy = document.getElementById('proxySelect').value;
+            alert('Proxy service updated to: ' + currentProxy);
+        }
+
+        // Enter key support
+        document.getElementById('mainSearch').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        document.getElementById('urlBar').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                navigateToUrl();
+            }
+        });
+    </script>
+</body>
+</html>
